@@ -1,0 +1,106 @@
+scalar Time
+
+schema {
+	query: Query
+	mutation: Mutation
+}
+
+type Query {
+	user(id: String!): User
+}
+
+type Mutation {
+	createSession(
+		username: String!,
+		password: String!,
+	): Session!
+
+	destroySession(
+		id: String!,
+	): Boolean!
+
+	createUser(
+		username: String!,
+		displayName: String!,
+		avatarURL: String,
+		password: String!,
+	): User!
+	
+	sendMessage(
+		body: String!,
+		conversationID: String!,
+	): Message!
+
+	editMessage(
+		messageID: String!,
+		body: String!,
+	): Message!
+
+	deleteMessage(
+		messageID: String!,
+		reason: String,
+	): Boolean!
+
+	createConversation(
+		title: String!,
+		participants: [String!]!,
+		avatarURL: String,
+	): Conversation!
+
+	leaveConversation(
+		conversationID: String!,
+	): Boolean!
+
+	editConversation(
+		conversationID: String!,
+		title: String,
+		avatarURL: String,
+	): Conversation!
+
+	removeUserFromConversation(
+		conversationID: String!,
+		userID: String!,
+	): Boolean!
+}
+
+type User {
+	id: String!
+	username: String!
+	displayName: String!
+	creationTime: Time!
+	avatarURL: String
+	sessions: [Session!]!
+	conversations: [Conversation!]!
+}
+
+type Conversation {
+	id: String!
+	title: String!
+	avatarURL: String
+	participants: [User!]!
+	messages(afterID: String, limit: Int!): [Message!]!
+	creationTime: Time!
+}
+
+type Message {
+	id: String!
+	body: String!
+	sender: User!
+	conversation: Conversation!
+	sendingTime: Time!
+	edits: [MessageEdit!]!
+}
+
+type MessageEdit {
+	editor: User!
+	time: Time!
+	previousBody: String!
+}
+
+type Session {
+	id: String!
+	user: User!
+	ip: String!
+	userAgent: String!
+	creationTime: Time!
+}
