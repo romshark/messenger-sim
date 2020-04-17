@@ -3,8 +3,9 @@ package eventlog
 import (
 	"errors"
 	"fmt"
-	"simulator/messenger/id"
 	"sync"
+
+	"github.com/romshark/messenger-sim/messenger/id"
 )
 
 // Version represents a version identifier of the event log

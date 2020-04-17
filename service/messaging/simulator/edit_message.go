@@ -3,9 +3,10 @@ package simulator
 import (
 	"context"
 	"fmt"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/service/messaging"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/service/messaging"
 )
 
 func (s *Simulator) EditMessage(

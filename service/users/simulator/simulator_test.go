@@ -3,14 +3,15 @@ package simulator_test
 import (
 	"context"
 	"errors"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/messenger/passhash"
-	"simulator/messenger/username"
-	"simulator/service/users"
-	userssim "simulator/service/users/simulator"
 	"testing"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/passhash"
+	"github.com/romshark/messenger-sim/messenger/username"
+	"github.com/romshark/messenger-sim/service/users"
+	userssim "github.com/romshark/messenger-sim/service/users/simulator"
 
 	"github.com/stretchr/testify/require"
 )

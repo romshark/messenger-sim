@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/messenger/username"
-	"simulator/service/auth"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/username"
+	"github.com/romshark/messenger-sim/service/auth"
 )
 
 func (s *Simulator) CreateSession(

@@ -2,8 +2,9 @@ package sessid_test
 
 import (
 	"fmt"
-	"simulator/messenger/sessid"
 	"testing"
+
+	"github.com/romshark/messenger-sim/messenger/sessid"
 
 	"github.com/stretchr/testify/require"
 )

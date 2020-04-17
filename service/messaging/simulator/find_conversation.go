@@ -2,8 +2,9 @@ package simulator
 
 import (
 	"context"
-	"simulator/messenger/event"
-	"simulator/service/messaging"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/service/messaging"
 )
 
 func (s *Simulator) FindConversation(

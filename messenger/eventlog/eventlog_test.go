@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"simulator/messenger/eventlog"
 	"testing"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/eventlog"
 
 	"github.com/stretchr/testify/require"
 )

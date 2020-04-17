@@ -1,8 +1,9 @@
 package passhash_test
 
 import (
-	"simulator/messenger/passhash"
 	"testing"
+
+	"github.com/romshark/messenger-sim/messenger/passhash"
 
 	"github.com/stretchr/testify/require"
 )

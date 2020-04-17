@@ -2,7 +2,8 @@ package event
 
 import (
 	"net/url"
-	"simulator/messenger/eventlog"
+
+	"github.com/romshark/messenger-sim/messenger/eventlog"
 )
 
 type ConversationCreated struct {

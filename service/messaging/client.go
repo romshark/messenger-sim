@@ -3,8 +3,9 @@ package messaging
 import (
 	"context"
 	"net/url"
-	"simulator/messenger/event"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/event"
 )
 
 // Client represents the interface of a messaging service client

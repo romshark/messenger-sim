@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/messenger/id"
-	"simulator/messenger/username"
-	"simulator/service/users"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/id"
+	"github.com/romshark/messenger-sim/messenger/username"
+	"github.com/romshark/messenger-sim/service/users"
 )
 
 // CreateNewUser creates a new messenger user

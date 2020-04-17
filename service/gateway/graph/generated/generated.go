@@ -6,11 +6,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"simulator/service/gateway/graph/model"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/romshark/messenger-sim/service/gateway/graph/model"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"

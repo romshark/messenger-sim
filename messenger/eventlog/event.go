@@ -2,8 +2,9 @@ package eventlog
 
 import (
 	"errors"
-	"simulator/messenger/id"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/id"
 )
 
 // EventID represents a unique event identifier

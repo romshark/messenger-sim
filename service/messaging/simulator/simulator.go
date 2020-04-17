@@ -2,11 +2,12 @@ package simulator
 
 import (
 	"errors"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/service/messaging"
 	"sync"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/service/messaging"
 )
 
 // Simulator represents an in-memory simulation of the messaging service

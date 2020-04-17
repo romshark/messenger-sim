@@ -1,9 +1,9 @@
 package graph
 
 import (
-	"simulator/service/auth"
-	"simulator/service/messaging"
-	"simulator/service/users"
+	"github.com/romshark/messenger-sim/service/auth"
+	"github.com/romshark/messenger-sim/service/messaging"
+	"github.com/romshark/messenger-sim/service/users"
 )
 
 // Resolver represents the graph resolver

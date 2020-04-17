@@ -2,8 +2,9 @@ package event
 
 import (
 	"net/url"
-	"simulator/messenger/eventlog"
-	"simulator/messenger/username"
+
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/username"
 )
 
 type UserCreated struct {

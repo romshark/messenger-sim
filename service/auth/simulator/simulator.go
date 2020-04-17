@@ -2,13 +2,14 @@ package simulator
 
 import (
 	"fmt"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/messenger/passhash"
-	"simulator/messenger/sessid"
-	"simulator/messenger/username"
-	"simulator/service/auth"
 	"sync"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/passhash"
+	"github.com/romshark/messenger-sim/messenger/sessid"
+	"github.com/romshark/messenger-sim/messenger/username"
+	"github.com/romshark/messenger-sim/service/auth"
 )
 
 // Simulator represents an in-memory simulation of the authentication service

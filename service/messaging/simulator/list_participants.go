@@ -2,7 +2,8 @@ package simulator
 
 import (
 	"context"
-	"simulator/messenger/event"
+
+	"github.com/romshark/messenger-sim/messenger/event"
 )
 
 func (s *Simulator) ListParticipants(

@@ -3,18 +3,18 @@ package gateway
 import (
 	"fmt"
 	"net/http"
-	"simulator/service/auth"
-	"simulator/service/gateway/graph"
-	"simulator/service/gateway/graph/generated"
-	"simulator/service/messaging"
-	"simulator/service/users"
+
+	"github.com/romshark/messenger-sim/service/auth"
+	"github.com/romshark/messenger-sim/service/gateway/graph"
+	"github.com/romshark/messenger-sim/service/gateway/graph/generated"
+	"github.com/romshark/messenger-sim/service/messaging"
+	"github.com/romshark/messenger-sim/service/users"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 )
 
 // Server represents the gateway ingress server
 type Server struct {
-	*http.Server
 	graphServer *handler.Server
 }
 
@@ -34,7 +34,7 @@ func NewServer(
 		return nil, fmt.Errorf("missing messaging service client")
 	}
 
-	s := &Server{
+	return &Server{
 		graphServer: handler.NewDefaultServer(
 			generated.NewExecutableSchema(
 				generated.Config{Resolvers: &graph.Resolver{
@@ -44,11 +44,7 @@ func NewServer(
 				}},
 			),
 		),
-	}
-	s.Server = &http.Server{
-		Handler: s,
-	}
-	return s, nil
+	}, nil
 }
 
 func (s *Server) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

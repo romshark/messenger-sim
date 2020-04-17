@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"net/url"
-	"simulator/messenger/event"
-	"simulator/messenger/username"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/username"
 )
 
 // Client represents the interface of a users service client

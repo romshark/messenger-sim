@@ -3,8 +3,9 @@ package simulator
 import (
 	"context"
 	"fmt"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
 )
 
 func (s *Simulator) RemoveUserFromConversation(

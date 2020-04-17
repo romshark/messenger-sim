@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/service/messaging"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/service/messaging"
 )
 
 // sync synchronizes the service against the event log

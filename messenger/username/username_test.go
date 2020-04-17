@@ -1,9 +1,10 @@
 package username_test
 
 import (
-	"simulator/messenger/username"
 	"strings"
 	"testing"
+
+	"github.com/romshark/messenger-sim/messenger/username"
 
 	"github.com/stretchr/testify/require"
 )

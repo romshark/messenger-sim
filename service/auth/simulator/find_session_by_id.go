@@ -2,8 +2,9 @@ package simulator
 
 import (
 	"context"
-	"simulator/messenger/sessid"
-	"simulator/service/auth"
+
+	"github.com/romshark/messenger-sim/messenger/sessid"
+	"github.com/romshark/messenger-sim/service/auth"
 )
 
 func (s *Simulator) FindSessionByID(

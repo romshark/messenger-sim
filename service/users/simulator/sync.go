@@ -1,9 +1,9 @@
 package simulator
 
 import (
-	"simulator/messenger/event"
-	"simulator/messenger/eventlog"
-	"simulator/service/users"
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/service/users"
 )
 
 // sync synchronizes the service against the event log

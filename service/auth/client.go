@@ -2,10 +2,11 @@ package auth
 
 import (
 	"context"
-	"simulator/messenger/event"
-	"simulator/messenger/sessid"
-	"simulator/messenger/username"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	"github.com/romshark/messenger-sim/messenger/sessid"
+	"github.com/romshark/messenger-sim/messenger/username"
 )
 
 // Client represents the interface of an authentication service client

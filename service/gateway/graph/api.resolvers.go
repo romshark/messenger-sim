@@ -7,12 +7,13 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"simulator/messenger/event"
-	libid "simulator/messenger/id"
-	"simulator/messenger/sessid"
-	usrname "simulator/messenger/username"
-	"simulator/service/gateway/graph/generated"
-	"simulator/service/gateway/graph/model"
+
+	"github.com/romshark/messenger-sim/messenger/event"
+	libid "github.com/romshark/messenger-sim/messenger/id"
+	"github.com/romshark/messenger-sim/messenger/sessid"
+	usrname "github.com/romshark/messenger-sim/messenger/username"
+	"github.com/romshark/messenger-sim/service/gateway/graph/generated"
+	"github.com/romshark/messenger-sim/service/gateway/graph/model"
 )
 
 func (r *conversationResolver) Participants(ctx context.Context, obj *model.Conversation) ([]*model.User, error) {

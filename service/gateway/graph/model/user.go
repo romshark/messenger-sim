@@ -1,8 +1,9 @@
 package model
 
 import (
-	"simulator/messenger/event"
 	"time"
+
+	"github.com/romshark/messenger-sim/messenger/event"
 )
 
 type User struct {

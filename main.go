@@ -2,14 +2,16 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
-	"simulator/messenger/eventlog"
-	"simulator/messenger/passhash"
-	"simulator/messenger/sessid"
-	authsim "simulator/service/auth/simulator"
-	gateway "simulator/service/gateway"
-	messagingsim "simulator/service/messaging/simulator"
-	userssim "simulator/service/users/simulator"
+
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/passhash"
+	"github.com/romshark/messenger-sim/messenger/sessid"
+	authsim "github.com/romshark/messenger-sim/service/auth/simulator"
+	gateway "github.com/romshark/messenger-sim/service/gateway"
+	messagingsim "github.com/romshark/messenger-sim/service/messaging/simulator"
+	userssim "github.com/romshark/messenger-sim/service/users/simulator"
 )
 
 // DefaultPort defines the default fallback server port
@@ -25,14 +27,14 @@ func main() {
 
 	passHashComparer := passhash.NewBcrypt()
 
-	usersService, err := userssim.New(l, passHashComparer)
-	if err != nil {
-		log.Fatalf("initializing users service: %s", err)
-	}
-
 	sessIDGen, err := sessid.NewGenerator(128)
 	if err != nil {
 		log.Fatalf("initializing session id generator: %s", err)
+	}
+
+	usersService, err := userssim.New(l, passHashComparer)
+	if err != nil {
+		log.Fatalf("initializing users service: %s", err)
 	}
 
 	authService, err := authsim.New(l, sessIDGen, passHashComparer)
@@ -54,9 +56,13 @@ func main() {
 		log.Fatalf("initializing gateway server")
 	}
 
+	httpSrv := &http.Server{
+		Addr:    "localhost:" + port,
+		Handler: gatewayServer,
+	}
+
 	log.Printf("listening on http://localhost:%s", port)
-	gatewayServer.Addr = "localhost:" + port
-	if err := gatewayServer.ListenAndServe(); err != nil {
+	if err := httpSrv.ListenAndServe(); err != nil {
 		log.Fatalf("listening: %s", err)
 	}
 

@@ -1,8 +1,8 @@
 package event
 
 import (
-	"simulator/messenger/eventlog"
-	"simulator/messenger/sessid"
+	"github.com/romshark/messenger-sim/messenger/eventlog"
+	"github.com/romshark/messenger-sim/messenger/sessid"
 )
 
 type SessionCreated struct {

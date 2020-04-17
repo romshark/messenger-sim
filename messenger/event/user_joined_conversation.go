@@ -1,6 +1,6 @@
 package event
 
-import "simulator/messenger/eventlog"
+import "github.com/romshark/messenger-sim/messenger/eventlog"
 
 type UserJoinedConversation struct {
 	User         UserID

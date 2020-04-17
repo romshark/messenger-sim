@@ -1,7 +1,7 @@
 package event
 
 import (
-	"simulator/messenger/id"
+	"github.com/romshark/messenger-sim/messenger/id"
 )
 
 type (

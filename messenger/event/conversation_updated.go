@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"simulator/messenger/eventlog"
+
+	"github.com/romshark/messenger-sim/messenger/eventlog"
 )
 
 type ConversationUpdated struct {
