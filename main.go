@@ -65,7 +65,4 @@ func main() {
 	if err := httpSrv.ListenAndServe(); err != nil {
 		log.Fatalf("listening: %s", err)
 	}
-
-	// log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	// log.Fatal(http.ListenAndServe(":"+port, nil))
 }
