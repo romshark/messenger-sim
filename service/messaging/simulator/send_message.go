@@ -33,7 +33,6 @@ func (s *Simulator) SendMessage(
 	pushedEvent, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure the conversation exists
 			conv, ok := s.conversationsByID[conversationID]

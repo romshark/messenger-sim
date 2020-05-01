@@ -12,17 +12,24 @@ import (
 func TryPush(
 	ctx context.Context,
 	eventLog *EventLog,
-	assumedVersion Version,
 	fn func(retries int) (Payload, error),
 	sync func() (Version, error),
 ) (
 	pushedEvent Event,
 	err error,
 ) {
+	var assumedVersion Version
+
 	// Reapeat until either cancelled, succeeded or failed
 	for i := 0; ; i++ {
 		// Check context for cancelation
 		if err = ctx.Err(); err != nil {
+			return
+		}
+
+		// Make sure to update the projection
+		if assumedVersion, err = sync(); err != nil {
+			err = fmt.Errorf("synchronizing: %w", err)
 			return
 		}
 
@@ -38,10 +45,6 @@ func TryPush(
 		switch {
 		case errors.Is(err, ErrMismatchingVersion):
 			// The projection is out of sync, synchronize & repeat
-			if assumedVersion, err = sync(); err != nil {
-				err = fmt.Errorf("synchronizing: %w", err)
-				return
-			}
 			continue
 		case err != nil:
 			// Push failed for unexpected reason

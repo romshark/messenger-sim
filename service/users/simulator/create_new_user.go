@@ -47,7 +47,6 @@ func (s *Simulator) CreateNewUser(
 	pushedEvent, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Check invariants
 			if _, ok := s.usersByUsername[username]; ok {

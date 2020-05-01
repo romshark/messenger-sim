@@ -31,7 +31,6 @@ func (s *Simulator) CreateSession(
 	pushedEvent, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure the user exists
 			var ok bool

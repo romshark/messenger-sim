@@ -29,7 +29,6 @@ func (s *Simulator) CreateConversation(
 	pushedEvent, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure users exist
 			for _, participantID := range participants {

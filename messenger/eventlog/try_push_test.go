@@ -31,13 +31,7 @@ func TestTryPush(t *testing.T) {
 		return V(1), nil
 	}
 
-	pushedEvent, err := eventlog.TryPush(
-		context.Background(),
-		l,
-		V(0), // Assume outdated version
-		tx,
-		sync,
-	)
+	pushedEvent, err := eventlog.TryPush(context.Background(), l, tx, sync)
 	require.NoError(t, err)
 	require.NotZero(t, pushedEvent.ID)
 	require.WithinDuration(
@@ -46,7 +40,7 @@ func TestTryPush(t *testing.T) {
 		pushedEvent.Time,
 		time.Second,
 	)
-	require.Equal(t, 2, txCalls)
+	require.Equal(t, 1, txCalls)
 	require.Equal(t, 2, syncCalls, "expect one retry sync call and one final")
-	require.Equal(t, 1, lastRetries)
+	require.Equal(t, 0, lastRetries)
 }

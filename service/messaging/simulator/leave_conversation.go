@@ -19,7 +19,6 @@ func (s *Simulator) LeaveConversation(
 	_, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure the conversation exists
 			var conv *conversation

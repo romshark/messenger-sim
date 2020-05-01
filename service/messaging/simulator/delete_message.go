@@ -20,7 +20,6 @@ func (s *Simulator) DeleteMessage(
 	_, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure message exists
 			if _, ok := s.messagesByID[messageID]; !ok {

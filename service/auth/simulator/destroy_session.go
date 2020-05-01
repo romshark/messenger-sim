@@ -19,7 +19,6 @@ func (s *Simulator) DestroySession(
 	_, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure the session exists
 			if _, ok := s.sessionsByID[sessionID]; !ok {

@@ -23,7 +23,6 @@ func (s *Simulator) EditMessage(
 	_, err := eventlog.TryPush(
 		ctx,
 		s.eventLog,
-		s.projectionVersion,
 		func(retries int) (eventlog.Payload, error) {
 			// Make sure the message exists
 			var ok bool
