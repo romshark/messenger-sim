@@ -49,7 +49,7 @@ func (s *Simulator) CreateConversation(
 			}
 
 			return &event.ConversationCreated{
-				ID:           event.ConversationID(newID),
+				ID:           newID,
 				Creator:      creatorID,
 				Participants: participants,
 				Title:        title,

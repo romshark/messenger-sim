@@ -27,3 +27,13 @@ func FromString(s string) (ID, error) {
 	id, err := ulid.Parse(s)
 	return ID{id}, err
 }
+
+// IsZero returns true if the identifier is zero
+func (id ID) IsZero() bool {
+	for _, b := range id.ULID {
+		if b != 0 {
+			return false
+		}
+	}
+	return true
+}

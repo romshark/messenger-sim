@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/romshark/messenger-sim/messenger/event"
@@ -14,6 +15,7 @@ import (
 	usrname "github.com/romshark/messenger-sim/messenger/username"
 	"github.com/romshark/messenger-sim/service/gateway/graph/generated"
 	"github.com/romshark/messenger-sim/service/gateway/graph/model"
+	"github.com/romshark/messenger-sim/service/gateway/middleware"
 )
 
 func (r *conversationResolver) Participants(ctx context.Context, obj *model.Conversation) ([]*model.User, error) {
@@ -178,27 +180,39 @@ func (r *messageEditResolver) Editor(ctx context.Context, obj *model.MessageEdit
 }
 
 func (r *mutationResolver) CreateSession(ctx context.Context, username string, password string) (*model.Session, error) {
-	// TODO: get IP & UserAgent from context
-	const nullIP = "0.0.0.0"
+	req := getReq(ctx)
+
 	sess, err := r.AuthService.CreateSession(
 		ctx,
 		usrname.Username(username),
 		password,
-		nullIP,
-		"",
+		req.IP,
+		req.UserAgent,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	http.SetCookie(req.ResponseWriter, &http.Cookie{
+		Name:   middleware.CookieSessionID,
+		Value:  string(sess.ID),
+		Secure: true,
+	})
+
 	return &model.Session{
+		UserID:       sess.User,
 		ID:           string(sess.ID),
-		IP:           nullIP,
-		UserAgent:    "",
+		IP:           req.IP,
+		UserAgent:    req.UserAgent,
 		CreationTime: sess.CreationTime,
 	}, nil
 }
 
 func (r *mutationResolver) DestroySession(ctx context.Context, id string) (bool, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return false, err
+	}
+
 	if err := r.AuthService.DestroySession(
 		ctx,
 		sessid.SessionID(id),
@@ -239,6 +253,10 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, disp
 }
 
 func (r *mutationResolver) SendMessage(ctx context.Context, body string, conversationID string) (*model.Message, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return nil, err
+	}
+
 	convID, err := libid.FromString(conversationID)
 	if err != nil {
 		return nil, fmt.Errorf("parsing conversation ID: %w", err)
@@ -265,18 +283,21 @@ func (r *mutationResolver) SendMessage(ctx context.Context, body string, convers
 }
 
 func (r *mutationResolver) EditMessage(ctx context.Context, messageID string, body string) (*model.Message, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return nil, err
+	}
+
+	req := getReq(ctx)
+
 	mid, err := libid.FromString(messageID)
 	if err != nil {
 		return nil, fmt.Errorf("parsing message ID: %w", err)
 	}
 
-	// TODO: get editor ID from session
-	var editorID event.UserID
-
 	editedMsg, err := r.MessagingService.EditMessage(
 		ctx,
 		event.MessageID(mid),
-		editorID,
+		req.Session.User,
 		body,
 	)
 	if err != nil {
@@ -293,27 +314,32 @@ func (r *mutationResolver) EditMessage(ctx context.Context, messageID string, bo
 }
 
 func (r *mutationResolver) DeleteMessage(ctx context.Context, messageID string, reason *string) (bool, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return false, err
+	}
+	req := getReq(ctx)
+
 	mid, err := libid.FromString(messageID)
 	if err != nil {
 		return false, fmt.Errorf("parsing message ID: %w", err)
 	}
 
-	// TODO: get deletor ID from session
-	var deletorID event.UserID
-
-	err = r.MessagingService.DeleteMessage(
+	if err = r.MessagingService.DeleteMessage(
 		ctx,
 		event.MessageID(mid),
-		deletorID,
+		req.Session.User,
 		reason,
-	)
-	if err != nil {
+	); err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
 func (r *mutationResolver) CreateConversation(ctx context.Context, title string, participants []string, avatarURL *string) (*model.Conversation, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return nil, err
+	}
+
 	participantIDs := make([]event.UserID, len(participants))
 	for i, p := range participants {
 		id, err := libid.FromString(p)
@@ -323,7 +349,7 @@ func (r *mutationResolver) CreateConversation(ctx context.Context, title string,
 				i, err,
 			)
 		}
-		participantIDs[i] = event.UserID(id)
+		participantIDs[i] = id
 	}
 
 	var avatar *url.URL
@@ -334,13 +360,12 @@ func (r *mutationResolver) CreateConversation(ctx context.Context, title string,
 		}
 	}
 
-	// TODO: get creator ID from session
-	var creatorID event.UserID
+	req := getReq(ctx)
 
 	newConv, err := r.MessagingService.CreateConversation(
 		ctx,
 		title,
-		creatorID,
+		req.Session.User,
 		participantIDs,
 		avatar,
 	)
@@ -358,19 +383,18 @@ func (r *mutationResolver) CreateConversation(ctx context.Context, title string,
 }
 
 func (r *mutationResolver) LeaveConversation(ctx context.Context, conversationID string) (bool, error) {
-	// TODO: get user ID from session
-	var userID event.UserID
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return false, err
+	}
+
+	req := getReq(ctx)
 
 	cid, err := libid.FromString(conversationID)
 	if err != nil {
 		return false, fmt.Errorf("parsing conversation ID: %w", err)
 	}
 
-	err = r.MessagingService.LeaveConversation(
-		ctx,
-		userID,
-		event.ConversationID(cid),
-	)
+	err = r.MessagingService.LeaveConversation(ctx, req.Session.User, cid)
 	if err != nil {
 		return false, err
 	}
@@ -378,13 +402,16 @@ func (r *mutationResolver) LeaveConversation(ctx context.Context, conversationID
 }
 
 func (r *mutationResolver) EditConversation(ctx context.Context, conversationID string, title *string, avatarURL *string) (*model.Conversation, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return nil, err
+	}
+
+	req := getReq(ctx)
+
 	cid, err := libid.FromString(conversationID)
 	if err != nil {
 		return nil, fmt.Errorf("parsing conversation ID: %w", err)
 	}
-
-	// TODO: get editor ID from session
-	var editorID event.UserID
 
 	var avatar interface{}
 	if avatarURL != nil {
@@ -402,19 +429,13 @@ func (r *mutationResolver) EditConversation(ctx context.Context, conversationID 
 
 	updatedConv, err := r.MessagingService.EditConversation(
 		ctx,
-		event.ConversationID(cid),
-		editorID,
+		cid,
+		req.Session.User,
 		title,
 		avatar,
 	)
 	if err != nil {
 		return nil, err
-	}
-
-	var newAvatar *string
-	if updatedConv.AvatarURL != nil {
-		v := updatedConv.AvatarURL.String()
-		newAvatar = &v
 	}
 
 	return &model.Conversation{
@@ -427,6 +448,12 @@ func (r *mutationResolver) EditConversation(ctx context.Context, conversationID 
 }
 
 func (r *mutationResolver) RemoveUserFromConversation(ctx context.Context, conversationID string, userID string) (bool, error) {
+	if err := middleware.Either(ctx, middleware.Authenticated{}); err != nil {
+		return false, err
+	}
+
+	req := getReq(ctx)
+
 	cid, err := libid.FromString(conversationID)
 	if err != nil {
 		return false, fmt.Errorf("parsing conversation ID: %w", err)
@@ -437,14 +464,11 @@ func (r *mutationResolver) RemoveUserFromConversation(ctx context.Context, conve
 		return false, fmt.Errorf("parsing user ID: %w", err)
 	}
 
-	// TODO: get remover ID from session
-	var removerID event.UserID
-
 	err = r.MessagingService.RemoveUserFromConversation(
 		ctx,
-		event.ConversationID(cid),
-		event.UserID(uid),
-		removerID,
+		cid,
+		uid,
+		req.Session.User,
 	)
 	if err != nil {
 		return false, err
@@ -458,6 +482,10 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 		return nil, fmt.Errorf("parsing user ID: %w", err)
 	}
 	uid := event.UserID(i)
+
+	if err := middleware.Either(ctx, middleware.Owner{ID: uid}); err != nil {
+		return nil, err
+	}
 
 	users, err := r.UsersService.GetUsers(ctx, []event.UserID{uid})
 	if err != nil {
@@ -584,3 +612,7 @@ type (
 	sessionResolver      struct{ *Resolver }
 	userResolver         struct{ *Resolver }
 )
+
+func getReq(ctx context.Context) *middleware.Request {
+	return ctx.Value(middleware.CtxRequest).(*middleware.Request)
+}
