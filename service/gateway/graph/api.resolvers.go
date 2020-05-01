@@ -32,12 +32,19 @@ func (r *conversationResolver) Participants(ctx context.Context, obj *model.Conv
 
 	l := make([]*model.User, 0, len(users))
 	for _, u := range users {
+		var avatarURL *string
+		if u.AvatarURL != nil {
+			v := u.AvatarURL.String()
+			avatarURL = &v
+		}
+
 		l = append(l, &model.User{
 			UserID:       u.ID,
 			ID:           u.ID.String(),
 			Username:     string(u.Username),
 			DisplayName:  u.DisplayName,
 			CreationTime: u.CreationTime,
+			AvatarURL:    avatarURL,
 		})
 	}
 	return l, nil
@@ -67,6 +74,7 @@ func (r *conversationResolver) Messages(ctx context.Context, obj *model.Conversa
 	resolvers := make([]*model.Message, len(messages))
 	for i, m := range messages {
 		resolvers[i] = &model.Message{
+			MessageID:      m.ID,
 			ID:             m.ID.String(),
 			Body:           m.Body,
 			SendingTime:    m.SendingTime,
@@ -87,11 +95,19 @@ func (r *messageResolver) Sender(ctx context.Context, obj *model.Message) (*mode
 	}
 	u := users[0]
 
+	var avatarURL *string
+	if u.AvatarURL != nil {
+		v := u.AvatarURL.String()
+		avatarURL = &v
+	}
+
 	return &model.User{
+		UserID:       u.ID,
 		ID:           u.ID.String(),
 		Username:     string(u.Username),
 		DisplayName:  u.DisplayName,
 		CreationTime: u.CreationTime,
+		AvatarURL:    avatarURL,
 	}, nil
 }
 
@@ -111,10 +127,11 @@ func (r *messageResolver) Conversation(ctx context.Context, obj *model.Message) 
 	}
 
 	return &model.Conversation{
-		ID:           c.ID.String(),
-		Title:        c.Title,
-		AvatarURL:    avatarURL,
-		CreationTime: c.CreationTime,
+		ConversationID: c.ID,
+		ID:             c.ID.String(),
+		Title:          c.Title,
+		AvatarURL:      avatarURL,
+		CreationTime:   c.CreationTime,
 	}, nil
 }
 
@@ -143,12 +160,20 @@ func (r *messageEditResolver) Editor(ctx context.Context, obj *model.MessageEdit
 		return nil, nil
 	}
 	u := users[0]
+
+	var avatarURL *string
+	if u.AvatarURL != nil {
+		v := u.AvatarURL.String()
+		avatarURL = &v
+	}
+
 	return &model.User{
 		UserID:       obj.EditorID,
 		ID:           obj.EditorID.String(),
 		Username:     string(u.Username),
 		DisplayName:  u.DisplayName,
 		CreationTime: u.CreationTime,
+		AvatarURL:    avatarURL,
 	}, nil
 }
 
@@ -204,10 +229,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, disp
 		return nil, err
 	}
 	return &model.User{
+		UserID:       newUser.ID,
 		ID:           newUser.ID.String(),
 		Username:     username,
 		DisplayName:  displayName,
 		CreationTime: newUser.CreationTime,
+		AvatarURL:    avatarURL,
 	}, nil
 }
 
@@ -217,17 +244,24 @@ func (r *mutationResolver) SendMessage(ctx context.Context, body string, convers
 		return nil, fmt.Errorf("parsing conversation ID: %w", err)
 	}
 
-	_, err = r.MessagingService.SendMessage(
+	newMsg, err := r.MessagingService.SendMessage(
 		ctx,
 		body,
-		event.ConversationID(convID),
+		convID,
 		event.UserID{}, // SenderID
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.Message{}, nil
+	return &model.Message{
+		MessageID:      newMsg.ID,
+		SenderID:       newMsg.Sender,
+		ConversationID: newMsg.Conversation,
+		ID:             newMsg.ID.String(),
+		Body:           newMsg.Body,
+		SendingTime:    newMsg.SendingTime,
+	}, nil
 }
 
 func (r *mutationResolver) EditMessage(ctx context.Context, messageID string, body string) (*model.Message, error) {
@@ -313,8 +347,13 @@ func (r *mutationResolver) CreateConversation(ctx context.Context, title string,
 	if err != nil {
 		return nil, err
 	}
+
 	return &model.Conversation{
 		ConversationID: newConv.ID,
+		ID:             newConv.ID.String(),
+		Title:          title,
+		AvatarURL:      avatarURL,
+		CreationTime:   newConv.CreationTime,
 	}, nil
 }
 
@@ -382,7 +421,8 @@ func (r *mutationResolver) EditConversation(ctx context.Context, conversationID 
 		ConversationID: updatedConv.ID,
 		ID:             conversationID,
 		Title:          updatedConv.Title,
-		AvatarURL:      newAvatar,
+		AvatarURL:      avatarURL,
+		CreationTime:   updatedConv.CreationTime,
 	}, nil
 }
 
@@ -428,10 +468,10 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 	}
 	u := users[0]
 
-	var avatar *string
+	var avatarURL *string
 	if u.AvatarURL != nil {
 		v := u.AvatarURL.String()
-		avatar = &v
+		avatarURL = &v
 	}
 
 	return &model.User{
@@ -439,7 +479,7 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 		ID:           id,
 		Username:     string(u.Username),
 		DisplayName:  u.DisplayName,
-		AvatarURL:    avatar,
+		AvatarURL:    avatarURL,
 		CreationTime: u.CreationTime,
 	}, nil
 }
@@ -453,12 +493,20 @@ func (r *sessionResolver) User(ctx context.Context, obj *model.Session) (*model.
 		return nil, nil
 	}
 	u := users[0]
+
+	var avatarURL *string
+	if u.AvatarURL != nil {
+		v := u.AvatarURL.String()
+		avatarURL = &v
+	}
+
 	return &model.User{
 		UserID:       obj.UserID,
 		ID:           u.ID.String(),
 		Username:     string(u.Username),
 		DisplayName:  u.DisplayName,
 		CreationTime: u.CreationTime,
+		AvatarURL:    avatarURL,
 	}, nil
 }
 
