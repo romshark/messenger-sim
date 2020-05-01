@@ -213,6 +213,10 @@ func (r *mutationResolver) DestroySession(ctx context.Context, id string) (bool,
 		return false, err
 	}
 
+	if string(getReq(ctx).Session.ID) != id {
+		return false, middleware.ErrUnauthorized
+	}
+
 	if err := r.AuthService.DestroySession(
 		ctx,
 		sessid.SessionID(id),
