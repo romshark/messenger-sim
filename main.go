@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -14,10 +15,9 @@ import (
 	userssim "github.com/romshark/messenger-sim/service/users/simulator"
 )
 
-// DefaultPort defines the default fallback server port
-const DefaultPort = "8080"
-
 func main() {
+	flag.Parse()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = DefaultPort
@@ -56,13 +56,37 @@ func main() {
 		log.Fatalf("initializing gateway server")
 	}
 
-	httpSrv := &http.Server{
-		Addr:    "localhost:" + port,
+	httpsSrv := &http.Server{
+		Addr:    *flagHostAddr + ":" + port,
 		Handler: gatewayServer,
 	}
 
-	log.Printf("listening on http://localhost:%s", port)
-	if err := httpSrv.ListenAndServe(); err != nil {
+	log.Printf("listening on https://%s:%s", *flagHostAddr, port)
+	if err := httpsSrv.ListenAndServeTLS(
+		*flagCertFilePath,
+		*flagKeyFilePath,
+	); err != nil {
 		log.Fatalf("listening: %s", err)
 	}
 }
+
+// DefaultPort defines the default fallback server port
+const DefaultPort = "443"
+
+var (
+	flagCertFilePath = flag.String(
+		"crt",
+		"ssl/dev.messenger.org.crt",
+		"SSL public certificate file path",
+	)
+	flagKeyFilePath = flag.String(
+		"pkey",
+		"ssl/dev.messenger.org.key",
+		"SSL private key file path",
+	)
+	flagHostAddr = flag.String(
+		"host",
+		"dev.messenger.org",
+		"host address",
+	)
+)
