@@ -35,10 +35,11 @@ func (s *Simulator) CreateNewUser(
 	}
 
 	newEvent := &event.UserCreated{
-		ID:          event.UserID(newID),
-		Username:    username,
-		DisplayName: displayName,
-		AvatarURL:   avatarURL,
+		ID:           newID,
+		Username:     username,
+		DisplayName:  displayName,
+		AvatarURL:    avatarURL,
+		PasswordHash: string(passwordHash),
 	}
 
 	s.lock.Lock()
