@@ -109,13 +109,16 @@ func (s *Simulator) applyConversationCreated(
 			AvatarURL:    p.AvatarURL,
 			CreationTime: e.Time,
 		},
+		participants: make(map[event.UserID]*user, len(p.Participants)),
 	}
 	s.conversationsByID[p.ID] = newConv
 	for _, participantID := range p.Participants {
-		s.usersByID[participantID].joinedConversations[p.ID] = relUserConv{
+		u := s.usersByID[participantID]
+		u.joinedConversations[p.ID] = relUserConv{
 			joined:       e.Time,
 			conversation: newConv,
 		}
+		newConv.participants[participantID] = u
 	}
 }
 
